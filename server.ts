@@ -7,6 +7,7 @@ import { APP_URL, CORS_ORIGIN, MONGODB_URI, PORT } from './config';
 import { authRouter } from './src/routes/auth-router';
 import { cardRouter } from './src/routes/card-router';
 import { userRouter } from './src/routes/user-router';
+import multer from 'multer';
 
 const app = express();
 const port = PORT;
@@ -27,9 +28,6 @@ mongoose.connect(db)
 app.use('/api/auth', authRouter);
 app.use('/api/card', cardRouter);
 app.use('/api/user', userRouter);
-
-console.log('rrr');
-
 
 app.listen(port, () => {
     console.log(`Server is running on ${APP_URL}`);   

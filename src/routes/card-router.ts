@@ -38,7 +38,7 @@ cardRouter.get('/sellers/cards', async (req: AuthenticatedRequest, res: Response
     await cardController.getSellersCards(req, res);
 });
 
-cardRouter.get('/:query', async (req: AuthenticatedRequest, res: Response) => {
+cardRouter.get('/search/:query', async (req: AuthenticatedRequest, res: Response) => {
     await cardController.getCardsByQueryAndFilters(req, res);
 });
 

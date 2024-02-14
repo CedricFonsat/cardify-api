@@ -61,3 +61,14 @@ export interface DecodedUser extends JwtPayload {
   id: string; // Assurez-vous que cette propriété est correctement typée selon votre modèle d'utilisateur
   // Autres propriétés éventuelles
 }
+
+export interface UpdateEditUserType {
+  username?: string;
+  avatar?: string;
+  email?: string;
+  password?: string;
+}
+
+export interface UploadedFile {
+  filename: string;
+}

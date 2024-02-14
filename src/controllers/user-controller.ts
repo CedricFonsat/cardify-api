@@ -1,5 +1,9 @@
 import { User } from "./../models/user-model";
-import { AuthenticatedRequest, UserType } from "../types/Interface";
+import {
+  AuthenticatedRequest,
+  UpdateEditUserType,
+  UserType,
+} from "../types/Interface";
 import { Request, Response } from "express";
 import mongoose, { mongo } from "mongoose";
 import { ObjectId } from "mongoose";
@@ -15,45 +19,42 @@ export class userController {
   }
 
   static async setEditUserById(req: AuthenticatedRequest, res: Response) {
-    try{
+    try {
       if (!mongoose.mongo.ObjectId.isValid(req.params.id))
         return res.status(404).json({ error: "Invalid ID" });
 
       const user = await User.findOne({ _id: req.params.id });
-      if (!user)
-        return res.status(404).json({ message: "User not found" });
+      if (!user) return res.status(404).json({ message: "User not found" });
 
-        await User.findOneAndUpdate(
-          { _id: req.params.id },
-          {
-              username: req.body.username,
-              password: req.body.password,
-              email: req.body.email,
-              // avatar: req.body.avatar
-          }
-      );
-      
-      return res.status(200).json({ message: 'USER_UPDATED'});
+      let update: UpdateEditUserType = {};
 
-    }catch (error) {
+      if (req.file) update.avatar = req.file.filename;
+      if (req.body.username) update.username = req.body.username;
+      if (req.body.password) update.password = req.body.password;
+      if (req.body.email) update.email = req.body.email;
+
+      await User.findOneAndUpdate({ _id: req.params.id }, update);
+
+      return res
+        .status(200)
+        .json({ message: "USER_UPDATED", tab: update, otr: req.file });
+    } catch (error) {
       return res.status(500).json({ message: "error", error: error });
     }
   }
 
   static async setDeleteUserById(req: AuthenticatedRequest, res: Response) {
-    try{
+    try {
       if (!mongoose.mongo.ObjectId.isValid(req.params.id))
         return res.status(404).json({ error: "Invalid ID" });
 
       const user = await User.findOne({ _id: req.params.id });
-      if (!user)
-        return res.status(404).json({ message: "User not found" });
+      if (!user) return res.status(404).json({ message: "User not found" });
 
       await User.findOneAndDelete({ _id: req.params.id });
 
-      return res.status(200).json({ message: 'USER_DELETED'});
-
-    }catch (error) {
+      return res.status(200).json({ message: "USER_DELETED" });
+    } catch (error) {
       return res.status(500).json({ message: "error", error: error });
     }
   }
@@ -141,7 +142,7 @@ export class userController {
     } catch (e) {
       res.status(500).json({ message: "Error in Fetching user" });
     }
-}
+  }
 
   static async getFollowingsMe(req: AuthenticatedRequest, res: Response) {
     if (!req.user) return res.status(401).json({ message: "INVALID_USERNAME" });
@@ -187,7 +188,8 @@ export class userController {
   }
 
   static async getFollowingsById(req: AuthenticatedRequest, res: Response) {
-    if (!req.params) return res.status(401).json({ message: "INVALID_USERNAME" });
+    if (!req.params)
+      return res.status(401).json({ message: "INVALID_USERNAME" });
 
     const user = await User.findById(req.params.id);
 
@@ -208,7 +210,8 @@ export class userController {
   }
 
   static async getFollowersById(req: AuthenticatedRequest, res: Response) {
-    if (!req.params) return res.status(401).json({ message: "INVALID_USERNAME" });
+    if (!req.params)
+      return res.status(401).json({ message: "INVALID_USERNAME" });
 
     const user = await User.findById(req.params.id);
 

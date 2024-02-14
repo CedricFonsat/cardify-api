@@ -177,12 +177,16 @@ export class cardController {
 
   static async getCardsByQueryAndFilters(req: AuthenticatedRequest, res: Response){
     try{
-      const cards = await Card.find({ifAvailable: true});
-      if(!cards) return res.status(404).json({ error: "nothing card" });
+    
+      const cards = await Card.find({ifAvailable: true, name: { $regex: req.params.query, $options: 'i' }});
+      console.log(cards,'ggg');
+      
+
+      //add filters
 
       return res.status(200).json(cards);
     }catch(error){
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: "Internal server error e" });
     }
   }
 }
